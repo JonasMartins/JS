@@ -22,7 +22,7 @@ mongoose.connect(db, { useNewUrlParser: true })
   () => console.log('Sucessfully connected')
 ).catch(err => console.log(err));
 
-app.get('/',(req,res) => res.send('*****'));
+app.get('/',(req,res) => res.send('WWW'));
 
 app.use('/api/users',users); // go to const with same name above
 app.use('/api/profile',profile);
