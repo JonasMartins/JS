@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();  
 const User = require('../../models/User'); 
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const keys = require('../../config/keys');
 
 router.get('/test', (req,res) => res.json({
   msg:'users work'
@@ -12,7 +14,7 @@ router.post('/register', (req,res) =>{
   // find a email that matches the request.body.email
   User.findOne({
     email: req.body.email
-  }).then(user => {
+  }).then(user => { 
     if(user){
       return res.status(400).json({
         email:'Email previously takken'
@@ -51,7 +53,17 @@ router.post('/login', (req, res) => {
     bcrypt.compare(password, user.password)
       .then(isMatch => {
         if(isMatch) {
-          res.json({message:'Password matches'});
+          
+          // jwt payload
+          const payload = { id: user.id, name: user.name, picture: user.picture }
+          // token
+          jwt.sign(payload,keys.secret,{expiresIn: 3600 },
+            (err,token) => {
+              res.json({
+                success:true,
+                token: 'Bearer '+token
+              });
+          });
         } else {
           return res.status(400).json({password: 'Password do not matches'});
         }
